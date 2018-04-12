@@ -1,6 +1,7 @@
 #include "helix.h"
 #include "bootloader.h"
 #include "action_layer.h"
+#include "action_util.h"
 #include "eeconfig.h"
 #ifdef PROTOCOL_LUFA
 #include "lufa.h"
@@ -67,7 +68,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|-----------+-----------+-----------+-----------+-----------+-----------+-----------.  ,-----------+-----------+-----------+-----------+-----------+-----------+-----------|
          KC_LSFT,       KC_Z,       KC_X,       KC_C,       KC_V,       KC_B,    KC_LBRC,       KC_RBRC,       KC_N,       KC_M,    KC_COMM,     KC_DOT,    KC_SLSH,    KC_TAB,\
   //|-----------+-----------+-----------+-----------+-----------+-----------+-----------|  |-----------+-----------+-----------+-----------+-----------+-----------+-----------|
-         XXXXXXX,    XXXXXXX,    XXXXXXX,    KC_LGUI,      LOWER,     KC_SPC,     KC_ESC,       KC_BSPC,     KC_ENT,      RAISE,    KC_RGUI,    XXXXXXX,    XXXXXXX,   XXXXXXX \
+         XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,    KC_LGUI,      LOWER,     KC_SPC,        KC_ENT,      RAISE,    KC_RGUI,    XXXXXXX,    XXXXXXX,    XXXXXXX,   XXXXXXX \
   //`-----------------------------------------------------------------------------------'  `-----------------------------------------------------------------------------------'
   ),
 
@@ -81,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|-----------+-----------+-----------+-----------+-----------+-----------+-----------.  ,-----------+-----------+-----------+-----------+-----------+-----------+-----------|
          KC_LSFT,     KC_F11,     KC_F12,     KC_F13,     KC_F14,     KC_F15,    KC_LPRN,       KC_RPRN,     KC_F16,     KC_F17,     KC_F18,     KC_F19,     KC_F20,   XXXXXXX,\
   //|-----------+-----------+-----------+-----------+-----------+-----------+-----------|  |-----------+-----------+-----------+-----------+-----------+-----------+-----------|
-         XXXXXXX,    XXXXXXX,    XXXXXXX,    KC_LGUI,      LOWER,     KC_SPC,     KC_ESC,       KC_BSPC,    KC_BSPC,      RAISE,     KC_TAB,    XXXXXXX,    XXXXXXX,   XXXXXXX \
+         XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,    KC_LGUI,      LOWER,     KC_SPC,        KC_ENT,      RAISE,    KC_RGUI,    XXXXXXX,    XXXXXXX,    XXXXXXX,   XXXXXXX \
   //`-----------------------------------------------------------------------------------'  `-----------------------------------------------------------------------------------'
   ),
 
@@ -95,7 +96,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|-----------+-----------+-----------+-----------+-----------+-----------+-----------.  ,-----------+-----------+-----------+-----------+-----------+-----------+-----------|
          KC_LSFT,    XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,    KC_LPRN,       KC_RPRN, S(KC_MINS),  S(KC_EQL),    KC_LBRC,    KC_RBRC,    KC_BSLS, S(KC_GRV),\
   //|-----------+-----------+-----------+-----------+-----------+-----------+-----------|  |-----------+-----------+-----------+-----------+-----------+-----------+-----------|
-         XXXXXXX,    XXXXXXX,    XXXXXXX,     KC_TAB,      LOWER,     KC_ESC,     KC_ESC,       KC_BSPC,     KC_ENT,      RAISE,    KC_RGUI,    XXXXXXX,    XXXXXXX,   XXXXXXX \
+         XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,    KC_LGUI,      LOWER,     KC_SPC,        KC_ENT,      RAISE,    KC_RGUI,    XXXXXXX,    XXXXXXX,    XXXXXXX,   XXXXXXX \
   //`-----------------------------------------------------------------------------------'  `-----------------------------------------------------------------------------------'
   ),
 
@@ -109,7 +110,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|-----------+-----------+-----------+-----------+-----------+-----------+-----------.  ,-----------+-----------+-----------+-----------+-----------+-----------+-----------|
         RGB_SMOD,    RGB_HUD,    RGB_SAD,    RGB_VAD,    XXXXXXX,    XXXXXXX,    XXXXXXX,       XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,   XXXXXXX,\
   //|-----------+-----------+-----------+-----------+-----------+-----------+-----------|  |-----------+-----------+-----------+-----------+-----------+-----------+-----------|
-         XXXXXXX,    XXXXXXX,    XXXXXXX,    KC_LGUI,      LOWER,     KC_SPC,     KC_ESC,       KC_BSPC,     KC_ENT,      RAISE,    KC_RGUI,    XXXXXXX,    XXXXXXX,   XXXXXXX \
+         XXXXXXX,    XXXXXXX,    XXXXXXX,    XXXXXXX,    KC_LGUI,      LOWER,     KC_SPC,        KC_ENT,      RAISE,    KC_RGUI,    XXXXXXX,    XXXXXXX,    XXXXXXX,   XXXXXXX \
   //`-----------------------------------------------------------------------------------'  `-----------------------------------------------------------------------------------'
   )
 };
@@ -148,7 +149,184 @@ void update_tri_layer_RGB(uint8_t layer1, uint8_t layer2, uint8_t layer3) {
   }
 }
 
+void matrix_init_user(void) {
+    #ifdef AUDIO_ENABLE
+        startup_user();
+    #endif
+    #ifdef RGBLIGHT_ENABLE
+      RGB_current_mode = rgblight_config.mode;
+    #endif
+    //SSD1306 OLED init, make sure to add #define SSD1306OLED in config.h
+    #ifdef SSD1306OLED
+        TWI_Init(TWI_BIT_PRESCALE_1, TWI_BITLENGTH_FROM_FREQ(1, 800000));
+        iota_gfx_init(!has_usb());   // turns on the display
+    #endif
+}
+
+
+#ifdef AUDIO_ENABLE
+
+void startup_user()
+{
+    _delay_ms(20); // gets rid of tick
+}
+
+void shutdown_user()
+{
+    _delay_ms(150);
+    stop_all_notes();
+}
+
+void music_on_user(void)
+{
+    music_scale_user();
+}
+
+void music_scale_user(void)
+{
+    PLAY_SONG(music_scale);
+}
+
+#endif
+
+
+//SSD1306 OLED update loop, make sure to add #define SSD1306OLED in config.h
+#ifdef SSD1306OLED
+
+void matrix_scan_user(void) {
+     iota_gfx_task();  // this is what updates the display continuously
+}
+
+void matrix_update(struct CharacterMatrix *dest,
+                          const struct CharacterMatrix *source) {
+  if (memcmp(dest->display, source->display, sizeof(dest->display))) {
+    memcpy(dest->display, source->display, sizeof(dest->display));
+    dest->dirty = true;
+  }
+}
+
+//assign the right code to your layers for OLED display
+#define L_BASE 0
+#define L_LOWER 8
+#define L_RAISE 16
+#define L_FNLAYER 64
+#define L_NUMLAY 128
+#define L_NLOWER 136
+#define L_NFNLAYER 192
+#define L_MOUSECURSOR 256
+#define L_ADJUST 65536
+#define L_ADJUST_TRI 65560
+
+static void render_logo(struct CharacterMatrix *matrix) {
+
+  static char logo[]={
+    0x80,0x81,0x82,0x83,0x84,0x85,0x86,0x87,0x88,0x89,0x8a,0x8b,0x8c,0x8d,0x8e,0x8f,0x90,0x91,0x92,0x93,0x94,
+    0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7,0xa8,0xa9,0xaa,0xab,0xac,0xad,0xae,0xaf,0xb0,0xb1,0xb2,0xb3,0xb4,
+    0xc0,0xc1,0xc2,0xc3,0xc4,0xc5,0xc6,0xc7,0xc8,0xc9,0xca,0xcb,0xcc,0xcd,0xce,0xcf,0xd0,0xd1,0xd2,0xd3,0xd4,
+    0};
+  matrix_write(matrix, logo);
+  //matrix_write_P(&matrix, PSTR(" Split keyboard kit"));
+}
+
+
+
+void render_status(struct CharacterMatrix *matrix, uint16_t keycode, keyrecord_t *record) {
+
+  // Render to mode icon
+  // static char logo[][2][3]={{{0x95,0x96,0},{0xb5,0xb6,0}},{{0x97,0x98,0},{0xb7,0xb8,0}}};
+  // if(keymap_config.swap_lalt_lgui==false){
+  //   matrix_write(matrix, logo[0][0]);
+  //   matrix_write_P(matrix, PSTR("\n"));
+  //   matrix_write(matrix, logo[0][1]);
+  // }else{
+  //   matrix_write(matrix, logo[1][0]);
+  //   matrix_write_P(matrix, PSTR("\n"));
+  //   matrix_write(matrix, logo[1][1]);
+  // }
+  //
+
+
+  // Render key
+  char key[40];
+  int led_matrix[10][7] = {
+    {  5,  4,  3,  2,  1,  0,  0},
+    {  6,  7,  8,  9, 10, 11,  0},
+    { 17, 16, 15, 14, 13, 12,  0},
+    { 18, 19, 20, 21, 22, 23, 24},
+    { 31, 30, 29, 28, 27, 26, 25},
+    { 37, 36, 35, 34, 33, 32,  0},
+    { 38, 39, 40, 41, 42, 43,  0},
+    { 49, 48, 47, 46, 45, 44,  0},
+    { 50, 51, 52, 53, 54, 55, 56},
+    { 63, 62, 61, 60, 59, 58, 57}
+  };
+
+  int led_num = led_matrix[record->event.key.row][record->event.key.col];
+  snprintf(key, sizeof(led), "%dx%d, k%2d l%2d",
+    record->event.key.row,
+    record->event.key.col,
+    keycode,
+    led_num
+  );
+  matrix_write(matrix, key);
+
+  // rgblight_disable();
+  // rgblight_enable();
+  // rgblight_setrgb_at(record->event.key.row*50,255-record->event.key.col*50,255, led_num);
+
+
+  // Define layers here, Have not worked out how to have text displayed for each layer. Copy down the number you see and add a case for it below
+  char buf[40];
+  snprintf(buf,sizeof(buf), "Undef-%ld", layer_state);
+  matrix_write_P(matrix, PSTR("\nLayer: "));
+    switch (layer_state) {
+        case L_BASE:
+           matrix_write_P(matrix, PSTR("Default"));
+           break;
+        case L_RAISE:
+           matrix_write_P(matrix, PSTR("Raise"));
+           break;
+        case L_LOWER:
+           matrix_write_P(matrix, PSTR("Lower"));
+           break;
+        case L_ADJUST:
+        case L_ADJUST_TRI:
+           matrix_write_P(matrix, PSTR("Adjust"));
+           break;
+        default:
+           matrix_write(matrix, buf);
+    }
+
+  // Host Keyboard LED Status
+  char led[40];
+    snprintf(led, sizeof(led), "\n%s  %s  %s",
+            (host_keyboard_leds() & (1<<USB_LED_NUM_LOCK)) ? "NUMLOCK" : "       ",
+            (host_keyboard_leds() & (1<<USB_LED_CAPS_LOCK)) ? "CAPS" : "    ",
+            (host_keyboard_leds() & (1<<USB_LED_SCROLL_LOCK)) ? "SCLK" : "    ");
+  matrix_write(matrix, led);
+}
+
+void iota_gfx_record_user(uint16_t keycode, keyrecord_t *record) {
+  struct CharacterMatrix matrix;
+
+  #if DEBUG_TO_SCREEN
+    if (debug_enable) {
+      return;
+    }
+  #endif
+
+    matrix_clear(&matrix);
+    if(is_master){
+      render_status(&matrix, keycode, record);
+    }else{
+      render_logo(&matrix);
+    }
+    matrix_update(&display, &matrix);
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  iota_gfx_record_user(keycode, record);
+
   switch (keycode) {
     case QWERTY:
       if (record->event.pressed) {
@@ -261,149 +439,5 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
-void matrix_init_user(void) {
-    #ifdef AUDIO_ENABLE
-        startup_user();
-    #endif
-    #ifdef RGBLIGHT_ENABLE
-      RGB_current_mode = rgblight_config.mode;
-    #endif
-    //SSD1306 OLED init, make sure to add #define SSD1306OLED in config.h
-    #ifdef SSD1306OLED
-        TWI_Init(TWI_BIT_PRESCALE_1, TWI_BITLENGTH_FROM_FREQ(1, 800000));
-        iota_gfx_init(!has_usb());   // turns on the display
-    #endif
-}
-
-
-#ifdef AUDIO_ENABLE
-
-void startup_user()
-{
-    _delay_ms(20); // gets rid of tick
-}
-
-void shutdown_user()
-{
-    _delay_ms(150);
-    stop_all_notes();
-}
-
-void music_on_user(void)
-{
-    music_scale_user();
-}
-
-void music_scale_user(void)
-{
-    PLAY_SONG(music_scale);
-}
-
-#endif
-
-
-//SSD1306 OLED update loop, make sure to add #define SSD1306OLED in config.h
-#ifdef SSD1306OLED
-
-void matrix_scan_user(void) {
-     iota_gfx_task();  // this is what updates the display continuously
-}
-
-void matrix_update(struct CharacterMatrix *dest,
-                          const struct CharacterMatrix *source) {
-  if (memcmp(dest->display, source->display, sizeof(dest->display))) {
-    memcpy(dest->display, source->display, sizeof(dest->display));
-    dest->dirty = true;
-  }
-}
-
-//assign the right code to your layers for OLED display
-#define L_BASE 0
-#define L_LOWER 8
-#define L_RAISE 16
-#define L_FNLAYER 64
-#define L_NUMLAY 128
-#define L_NLOWER 136
-#define L_NFNLAYER 192
-#define L_MOUSECURSOR 256
-#define L_ADJUST 65536
-#define L_ADJUST_TRI 65560
-
-static void render_logo(struct CharacterMatrix *matrix) {
-
-  static char logo[]={
-    0x80,0x81,0x82,0x83,0x84,0x85,0x86,0x87,0x88,0x89,0x8a,0x8b,0x8c,0x8d,0x8e,0x8f,0x90,0x91,0x92,0x93,0x94,
-    0xa0,0xa1,0xa2,0xa3,0xa4,0xa5,0xa6,0xa7,0xa8,0xa9,0xaa,0xab,0xac,0xad,0xae,0xaf,0xb0,0xb1,0xb2,0xb3,0xb4,
-    0xc0,0xc1,0xc2,0xc3,0xc4,0xc5,0xc6,0xc7,0xc8,0xc9,0xca,0xcb,0xcc,0xcd,0xce,0xcf,0xd0,0xd1,0xd2,0xd3,0xd4,
-    0};
-  matrix_write(matrix, logo);
-  //matrix_write_P(&matrix, PSTR(" Split keyboard kit"));
-}
-
-
-
-void render_status(struct CharacterMatrix *matrix) {
-
-  // Render to mode icon
-  static char logo[][2][3]={{{0x95,0x96,0},{0xb5,0xb6,0}},{{0x97,0x98,0},{0xb7,0xb8,0}}};
-  if(keymap_config.swap_lalt_lgui==false){
-    matrix_write(matrix, logo[0][0]);
-    matrix_write_P(matrix, PSTR("\n"));
-    matrix_write(matrix, logo[0][1]);
-  }else{
-    matrix_write(matrix, logo[1][0]);
-    matrix_write_P(matrix, PSTR("\n"));
-    matrix_write(matrix, logo[1][1]);
-  }
-
-  // Define layers here, Have not worked out how to have text displayed for each layer. Copy down the number you see and add a case for it below
-  char buf[40];
-  snprintf(buf,sizeof(buf), "Undef-%ld", layer_state);
-  matrix_write_P(matrix, PSTR("\nLayer: "));
-    switch (layer_state) {
-        case L_BASE:
-           matrix_write_P(matrix, PSTR("Default"));
-           break;
-        case L_RAISE:
-           matrix_write_P(matrix, PSTR("Raise"));
-           break;
-        case L_LOWER:
-           matrix_write_P(matrix, PSTR("Lower"));
-           break;
-        case L_ADJUST:
-        case L_ADJUST_TRI:
-           matrix_write_P(matrix, PSTR("Adjust"));
-           break;
-        default:
-           matrix_write(matrix, buf);
-    }
-
-  // Host Keyboard LED Status
-  char led[40];
-    snprintf(led, sizeof(led), "\n%s  %s  %s",
-            (host_keyboard_leds() & (1<<USB_LED_NUM_LOCK)) ? "NUMLOCK" : "       ",
-            (host_keyboard_leds() & (1<<USB_LED_CAPS_LOCK)) ? "CAPS" : "    ",
-            (host_keyboard_leds() & (1<<USB_LED_SCROLL_LOCK)) ? "SCLK" : "    ");
-  matrix_write(matrix, led);
-}
-
-
-void iota_gfx_task_user(void) {
-  struct CharacterMatrix matrix;
-
-#if DEBUG_TO_SCREEN
-  if (debug_enable) {
-    return;
-  }
-#endif
-
-  matrix_clear(&matrix);
-  if(is_master){
-    render_status(&matrix);
-  }else{
-    render_logo(&matrix);
-  }
-  matrix_update(&display, &matrix);
-}
 
 #endif
