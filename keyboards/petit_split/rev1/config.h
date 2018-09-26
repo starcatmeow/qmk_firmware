@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DEVICE_VER      0x0001
 #define MANUFACTURER    foostan
 #define PRODUCT         PetitSplit
-#define DESCRIPTION     A split keyboard with 3x6 vertically staggered keys and 3 thumb keys
+#define DESCRIPTION     A split keyboard with 2x2 keys
 
 /* key matrix size */
 // Rows are doubled-up
