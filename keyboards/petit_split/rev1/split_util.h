@@ -3,8 +3,6 @@
 #include <stdbool.h>
 #include "eeconfig.h"
 
-#define SLAVE_I2C_ADDRESS           0x32
-
 extern volatile bool isLeftHand;
 
 // slave version of matix scan, defined in matrix.c

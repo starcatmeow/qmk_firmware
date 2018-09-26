@@ -10,14 +10,6 @@
 #include "ws2812.h"
 #endif
 
-#ifdef USE_I2C
-#include <stddef.h>
-#ifdef __AVR__
-	#include <avr/io.h>
-	#include <avr/interrupt.h>
-#endif
-#endif
-
 //void promicro_bootloader_jmp(bool program);
 #define LAYOUT( \
   L00, L01,   R00, R01, \

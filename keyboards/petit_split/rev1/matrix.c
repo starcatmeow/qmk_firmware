@@ -31,12 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "matrix.h"
 #include "split_util.h"
 #include "pro_micro.h"
-
-#ifdef USE_MATRIX_I2C
-#  include "i2c.h"
-#else // USE_SERIAL
-#  include "split_scomm.h"
-#endif
+#include "split_scomm.h"
 
 #ifndef DEBOUNCE
 #  define DEBOUNCE	5
@@ -146,41 +141,6 @@ uint8_t _matrix_scan(void)
     return 1;
 }
 
-#ifdef USE_MATRIX_I2C
-
-// Get rows from other half over i2c
-int i2c_transaction(void) {
-    int slaveOffset = (isLeftHand) ? (ROWS_PER_HAND) : 0;
-
-    int err = i2c_master_start(SLAVE_I2C_ADDRESS + I2C_WRITE);
-    if (err) goto i2c_error;
-
-    // start of matrix stored at 0x00
-    err = i2c_master_write(0x00);
-    if (err) goto i2c_error;
-
-    // Start read
-    err = i2c_master_start(SLAVE_I2C_ADDRESS + I2C_READ);
-    if (err) goto i2c_error;
-
-    if (!err) {
-        int i;
-        for (i = 0; i < ROWS_PER_HAND-1; ++i) {
-            matrix[slaveOffset+i] = i2c_master_read(I2C_ACK);
-        }
-        matrix[slaveOffset+i] = i2c_master_read(I2C_NACK);
-        i2c_master_stop();
-    } else {
-i2c_error: // the cable is disconnceted, or something else went wrong
-        i2c_reset_state();
-        return err;
-    }
-
-    return 0;
-}
-
-#else // USE_SERIAL
-
 int serial_transaction(int master_changed) {
     int slaveOffset = (isLeftHand) ? (ROWS_PER_HAND) : 0;
 #ifdef SERIAL_USE_MULTI_TRANSACTION
@@ -197,7 +157,6 @@ int serial_transaction(int master_changed) {
         (void *)serial_slave_buffer, SERIAL_SLAVE_BUFFER_LENGTH);
     return 0;
 }
-#endif
 
 uint8_t matrix_scan(void)
 {
@@ -221,25 +180,14 @@ uint8_t matrix_master_scan(void) {
 
     int offset = (isLeftHand) ? 0 : ROWS_PER_HAND;
 
-#ifdef USE_MATRIX_I2C
-//    for (int i = 0; i < ROWS_PER_HAND; ++i) {
-        /* i2c_slave_buffer[i] = matrix[offset+i]; */
-//        i2c_slave_buffer[i] = matrix[offset+i];
-//    }
-#else // USE_SERIAL
-  #ifdef SERIAL_USE_MULTI_TRANSACTION
+#ifdef SERIAL_USE_MULTI_TRANSACTION
     mchanged = memcmp((void *)serial_master_buffer,
 		      &matrix[offset], SERIAL_MASTER_BUFFER_LENGTH);
-  #endif
+#endif
     memcpy((void *)serial_master_buffer,
 	   &matrix[offset], SERIAL_MASTER_BUFFER_LENGTH);
-#endif
 
-#ifdef USE_MATRIX_I2C
-    if( i2c_transaction() ) {
-#else // USE_SERIAL
     if( serial_transaction(mchanged) ) {
-#endif
         // turn on the indicator led when halves are disconnected
         TXLED1;
 
@@ -266,25 +214,18 @@ void matrix_slave_scan(void) {
 
     int offset = (isLeftHand) ? 0 : ROWS_PER_HAND;
 
-#ifdef USE_MATRIX_I2C
-    for (int i = 0; i < ROWS_PER_HAND; ++i) {
-        /* i2c_slave_buffer[i] = matrix[offset+i]; */
-        i2c_slave_buffer[i] = matrix[offset+i];
-    }
-#else // USE_SERIAL
-  #ifdef SERIAL_USE_MULTI_TRANSACTION
+#ifdef SERIAL_USE_MULTI_TRANSACTION
     int change = 0;
-  #endif
+#endif
     for (int i = 0; i < ROWS_PER_HAND; ++i) {
-  #ifdef SERIAL_USE_MULTI_TRANSACTION
+#ifdef SERIAL_USE_MULTI_TRANSACTION
         if( serial_slave_buffer[i] != matrix[offset+i] )
 	    change = 1;
-  #endif
+#endif
         serial_slave_buffer[i] = matrix[offset+i];
     }
-  #ifdef SERIAL_USE_MULTI_TRANSACTION
+#ifdef SERIAL_USE_MULTI_TRANSACTION
     slave_buffer_change_count += change;
-  #endif
 #endif
 }
 
