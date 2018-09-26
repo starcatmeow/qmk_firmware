@@ -1,4 +1,4 @@
-#include "crkbd.h"
+#include "petit_split.h"
 
 const char *read_logo(void) {
   static char logo[] = {

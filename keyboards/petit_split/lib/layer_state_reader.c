@@ -1,7 +1,7 @@
 
 #include QMK_KEYBOARD_H
 #include <stdio.h>
-#include "crkbd.h"
+#include "petit_split.h"
 
 #define L_BASE 0
 #define L_LOWER 8

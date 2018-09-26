@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "crkbd.h"
+#include "petit_split.h"
 
 char mode_icon[24];
 
