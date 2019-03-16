@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
 */
 #define MATRIX_ROW_PINS { }
-#define MATRIX_COL_PINS { F6, F7, B1, B3, B2, B6, D4, C6, D7, E6, B4, B5 }
+#define MATRIX_COL_PINS { F6, B1, B2 }
 #define UNUSED_PINS
 
 /* COL2ROW, ROW2COL, or CUSTOM_MATRIX */
@@ -57,17 +57,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // #define BACKLIGHT_BREATHING
 // #define BACKLIGHT_LEVELS 3
 
-// #define RGB_DI_PIN E2
-// #ifdef RGB_DI_PIN
-//   #define RGBLED_NUM 16
-//   #define RGBLIGHT_HUE_STEP 8
-//   #define RGBLIGHT_SAT_STEP 8
-//   #define RGBLIGHT_VAL_STEP 8
-//   #define RGBLIGHT_LIMIT_VAL 255 /* The maximum brightness level */
-//   #define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */
-// /*== all animations enable ==*/
+ #define RGB_DI_PIN D3
+ #ifdef RGB_DI_PIN
+   #define RGBLED_NUM 6
+   #define RGBLIGHT_HUE_STEP 8
+   #define RGBLIGHT_SAT_STEP 8
+   #define RGBLIGHT_VAL_STEP 8
+   #define RGBLIGHT_LIMIT_VAL 255 /* The maximum brightness level */
+   #define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */
+ /*== all animations enable ==*/
 //   #define RGBLIGHT_ANIMATIONS
-// /*== or choose animations ==*/
+ /*== or choose animations ==*/
 //   #define RGBLIGHT_EFFECT_BREATHING
 //   #define RGBLIGHT_EFFECT_RAINBOW_MOOD
 //   #define RGBLIGHT_EFFECT_RAINBOW_SWIRL
@@ -75,9 +75,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //   #define RGBLIGHT_EFFECT_KNIGHT
 //   #define RGBLIGHT_EFFECT_CHRISTMAS
 //   #define RGBLIGHT_EFFECT_STATIC_GRADIENT
-//   #define RGBLIGHT_EFFECT_RGB_TEST
+   #define RGBLIGHT_EFFECT_RGB_TEST
 //   #define RGBLIGHT_EFFECT_ALTERNATING
-// #endif
+ #endif
 
 /* Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed */
 #define DEBOUNCING_DELAY 5
