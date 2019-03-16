@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
+#include "lufa.h"
+#include "ssd1306.h"
 
 // Defines the keycodes used by our macros in process_record_user
 enum custom_keycodes {
@@ -50,11 +52,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 void matrix_init_user(void) {
-
+  iota_gfx_init();
 }
 
 void matrix_scan_user(void) {
+  iota_gfx_task();
+}
 
+void matrix_update(struct CharacterMatrix *dest, const struct CharacterMatrix *source) {
+  if (memcmp(dest->display, source->display, sizeof(dest->display))) {
+    memcpy(dest->display, source->display, sizeof(dest->display));
+    dest->dirty = true;
+  }
+}
+
+void iota_gfx_task_user(void) {
+  struct CharacterMatrix matrix;
+  matrix_clear(&matrix);
+  matrix_write_P(&matrix, PSTR("Hello World!"));
+  matrix_update(&display, &matrix);
 }
 
 void led_set_user(uint8_t usb_led) {
