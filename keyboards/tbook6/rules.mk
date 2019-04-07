@@ -71,7 +71,7 @@ COMMAND_ENABLE = yes        # Commands for debug and configuration
 SLEEP_LED_ENABLE = no       # Breathing sleep LED during USB suspend
 # if this doesn't work, see here: https://github.com/tmk/tmk_keyboard/wiki/FAQ#nkro-doesnt-work
 NKRO_ENABLE = no            # USB Nkey Rollover
-BACKLIGHT_ENABLE = yes      # Enable keyboard backlight functionality on B7 by default
+BACKLIGHT_ENABLE = no       # Enable keyboard backlight functionality on B7 by default
 RGBLIGHT_ENABLE = no        # Enable keyboard RGB underglow
 MIDI_ENABLE = no            # MIDI support (+2400 to 4200, depending on config)
 UNICODE_ENABLE = no         # Unicode
@@ -80,6 +80,4 @@ AUDIO_ENABLE = no           # Audio output on port C6
 FAUXCLICKY_ENABLE = no      # Use buzzer to emulate clicky switches
 HD44780_ENABLE = no 		# Enable support for HD44780 based LCDs (+400)
 
-COMMON_VPATH += keyboards/helix
-SRC = i2c.c
-SRC += ssd1306.c
+SPLIT_KEYBOARD = yes
