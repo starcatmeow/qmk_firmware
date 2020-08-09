@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 /* USB Device descriptor parameter */
-#define VENDOR_ID       0xFEED
-#define PRODUCT_ID      0x3060
+#define VENDOR_ID       0x4653
+#define PRODUCT_ID      0x0001
 #define DEVICE_VER      0x0001
 #define MANUFACTURER    foostan
 #define PRODUCT         Corne Keyboard (crkbd)
@@ -35,6 +35,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // wiring of each half
 #define MATRIX_COL_PINS { F4, F5, F6, F7, B1, B3 }
 // #define MATRIX_COL_PINS { B2, B3, B1, F7, F6, F5, F4 } //uncomment this line and comment line above if you need to reverse left-to-right key order
+
+/* Select hand configuration */
+#define MASTER_LEFT
+// #define MASTER_RIGHT
+// #define EE_HANDS
+
+#ifndef SOFT_SERIAL_PIN
+#define SOFT_SERIAL_PIN D2
+#define SERIAL_USE_MULTI_TRANSACTION
+#endif
 
 /* define if matrix has ghost */
 //#define MATRIX_HAS_GHOST
@@ -54,12 +64,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGB_DI_PIN D3
 
 #ifdef RGBLIGHT_ENABLE
-#define RGBLED_NUM 12    // Number of LEDs
+#define RGBLIGHT_SPLIT
+#define RGBLIGHT_ANIMATIONS
+#define RGBLED_NUM 27
+#define RGBLIGHT_LIMIT_VAL 150 // limits maximum brightness of LEDs to 150 out of 255. Higher may cause the controller to crash.
 #endif
 
 #ifdef RGB_MATRIX_ENABLE
 #define RGBLED_NUM 54    // Number of LEDs
 #define DRIVER_LED_TOTAL RGBLED_NUM
+#define RGB_MATRIX_MAXIMUM_BRIGHTNESS 150 // limits maximum brightness of LEDs to 150 out of 255. Higher may cause the controller to crash.
 #endif
 
 /*

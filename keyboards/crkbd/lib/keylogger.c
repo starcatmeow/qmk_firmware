@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "action.h"
 #include "crkbd.h"
 
 char keylog_str[24] = {};
