@@ -4,11 +4,6 @@
 #include "pointing_device.h"
 #include "report.h"
 
-#ifdef PROTOCOL_LUFA
-  #include "lufa.h"
-  #include "split_util.h"
-#endif
-
 extern bool isScrollMode;
 
 #ifdef RGBLIGHT_ENABLE

@@ -1,9 +1,5 @@
 #include QMK_KEYBOARD_H
 #include "bootloader.h"
-#ifdef PROTOCOL_LUFA
-  #include "lufa.h"
-  #include "split_util.h"
-#endif
 
 extern keymap_config_t keymap_config;
 

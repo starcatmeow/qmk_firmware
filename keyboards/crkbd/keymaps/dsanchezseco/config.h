@@ -20,17 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-//#define USE_MATRIX_I2C
-#define USE_SERIAL
-
 /* Select hand configuration */
 
 // #define MASTER_LEFT
 // #define MASTER_RIGHT
 #define EE_HANDS
 
-// lower maximum brightness to lower power usage and prevent unresponsiveness
-#define RGB_MATRIX_MAXIMUM_BRIGHTNESS 200
 #define RGB_MATRIX_STARTUP_MODE RGB_MATRIX_GRADIENT_LEFT_RIGHT
 
 //disable effects

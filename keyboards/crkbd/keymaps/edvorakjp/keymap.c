@@ -1,11 +1,4 @@
 #include QMK_KEYBOARD_H
-#ifdef PROTOCOL_LUFA
-  #include "split_util.h"
-#endif
-#ifdef SSD1306OLED
-  #include "oled.h"
-#endif
-
 #include "edvorakjp.h"
 
 /*
@@ -63,18 +56,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
 };
 
-#ifdef SSD1306OLED
-void matrix_init_keymap(void) {
-  //SSD1306 OLED init, make sure to add #define SSD1306OLED in config.h
-#ifdef MASTER_RIGHT
-  iota_gfx_init(has_usb()); // turns on the display
-#else
-  iota_gfx_init(!has_usb());
-#endif // MASTER_RIGHT
-}
-
-void matrix_scan_user(void) {
-  iota_gfx_task();  // this is what updates the display continuously
+#ifdef OLED_DRIVER_ENABLE
+oled_rotation_t oled_init_user(oled_rotation_t rotation) {
+  if (!is_keyboard_master()) {
+    return OLED_ROTATION_180;  // flips the display 180 to see it from my side
+  return rotation;
 }
 #endif
 

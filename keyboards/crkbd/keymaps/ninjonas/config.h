@@ -22,14 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define TAPPING_TERM 200
 
-#define MASTER_LEFT
-
-#define USE_SERIAL_PD2
-
 #define TAPPING_FORCE_HOLD
 
 #ifdef RGB_MATRIX_ENABLE
-    #define RGB_MATRIX_MAXIMUM_BRIGHTNESS 120
     #define RGB_MATRIX_HUE_STEP 10
     #define RGB_MATRIX_SAT_STEP 10
     #define RGB_MATRIX_VAL_STEP 10
@@ -84,5 +79,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     // END: Disable RGB Effects
 #endif 
 
-#define OLED_FONT_H "keyboards/crkbd/lib/glcdfont.c"
 #define OLED_DISABLE_TIMEOUT

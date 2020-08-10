@@ -1,10 +1,5 @@
-#ifdef SSD1306OLED
+#ifdef OLED_DRIVER_ENABLE
 #include QMK_KEYBOARD_H
-#include "ssd1306.h"
-#ifdef PROTOCOL_LUFA
-#include "lufa.h"
-#include "split_util.h"
-#endif
 
 extern uint8_t is_master;
 
@@ -13,8 +8,6 @@ const char *read_logo(void);
 const char *read_keylog(void);
 const char *read_keylogs(void);
 void set_keylog(uint16_t keycode, keyrecord_t *record);
-
-void matrix_scan_user(void) { iota_gfx_task(); }
 
 typedef struct {
   uint8_t state;
@@ -46,11 +39,6 @@ void update_keymap_status(void) {
 }
 #endif
 
-void matrix_init_user(void) {
-  iota_gfx_init(!has_usb()); // turns on the display
-  update_keymap_status();
-}
-
 // declared in users/rs/rs.c
 void rgb_mod_changed_keymap(void) {
   update_keymap_status();
@@ -73,32 +61,25 @@ uint32_t layer_state_set_user(uint32_t state) {
   return state;
 }
 
-static inline void render_keymap_status(struct CharacterMatrix *matrix) {
-  matrix_write(matrix, layer_status_buf);
+static inline void render_keymap_status(void) {
+  oled_write_ln(layer_status_buf, false);
 }
 
-void matrix_render_user(struct CharacterMatrix *matrix) {
-  if (is_master) {
-    render_keymap_status(matrix);
-    matrix_write_ln(matrix, read_keylog());
-    matrix_write_ln(matrix, read_keylogs());
+oled_rotation_t oled_init_user(oled_rotation_t rotation) {
+  if (!is_keyboard_master()) {
+    return OLED_ROTATION_180;  // flips the display 180 degrees if offhand
+  }
+  return rotation;
+}
+
+void oled_task_user(void) {
+  if (is_keyboard_master()) {
+    render_keymap_status();
+    oled_write_ln(read_keylog(), false);
+    oled_write_ln(read_keylogs(), false);
   } else {
-    matrix_write(matrix, read_logo());
+    oled_write(read_logo(), false);
   }
-}
-
-void matrix_update(struct CharacterMatrix *dest, const struct CharacterMatrix *source) {
-  if (memcmp(dest->display, source->display, sizeof(dest->display))) {
-    memcpy(dest->display, source->display, sizeof(dest->display));
-    dest->dirty = true;
-  }
-}
-
-void iota_gfx_task_user(void) {
-  struct CharacterMatrix matrix;
-  matrix_clear(&matrix);
-  matrix_render_user(&matrix);
-  matrix_update(&display, &matrix);
 }
 
 #endif

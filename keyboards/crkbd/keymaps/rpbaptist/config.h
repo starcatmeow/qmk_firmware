@@ -20,18 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-//#define USE_MATRIX_I2C
-
 /* Select hand configuration */
 #define EE_HANDS
 
 #ifdef OLED_DRIVER_ENABLE
-#    undef SSD1306OLED
 #    define OLED_TIMEOUT 600000
 #endif
-
-#undef USE_I2C
-#define USE_SERIAL_PD2
 
 // #define FORCE_NKRO
 
@@ -43,7 +37,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifdef RGB_MATRIX_ENABLE
 #    define RGB_DISABLE_WHEN_USB_SUSPENDED true  // turn off effects when suspended
-#    define RGB_MATRIX_MAXIMUM_BRIGHTNESS 150
 
 #    define RGB_MATRIX_HUE_STEP 8
 #    define RGB_MATRIX_SAT_STEP 12
@@ -116,16 +109,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #ifdef THEME_GODSPEED
+#   undef OLED_FONT_H
 #   define OLED_FONT_H "keyboards/crkbd/keymaps/rpbaptist/glcdfont_godspeed.c"
 #   define THEME_HSV 132, 255, 125
 #endif
 
 #ifdef THEME_PULSE
+#   undef OLED_FONT_H
 #   define OLED_FONT_H "keyboards/crkbd/keymaps/rpbaptist/glcdfont_pulse.c"
 #   define THEME_HSV 123, 255, 125
 #endif
 
 #ifdef THEME_LASER
+#   undef OLED_FONT_H
 #   define OLED_FONT_H "keyboards/crkbd/keymaps/rpbaptist/glcdfont_laser.c"
 #   define THEME_HSV HSV_MAGENTA
 #endif

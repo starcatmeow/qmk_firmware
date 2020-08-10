@@ -1,15 +1,9 @@
 #include QMK_KEYBOARD_H
 #include "bootloader.h"
-#ifdef PROTOCOL_LUFA
-  #include "lufa.h"
-  #include "split_util.h"
-#endif
-#ifdef SSD1306OLED
-  #include "ssd1306.h"
-#endif
 #include "oled_helper.h"
 
 extern keymap_config_t keymap_config;
+extern rgblight_config_t rgblight_config;
 
 extern uint8_t is_master;
 
@@ -126,7 +120,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define L_ADJUST (1<<_ADJUST)
 #define L_ADJUST_TRI (L_ADJUST|L_RAISE|L_LOWER)
 
-#ifdef SSD1306OLED
+#ifdef OLED_DRIVER_ENABLE
 typedef struct {
   uint8_t state;
   char name[8];
@@ -163,18 +157,17 @@ static inline void update_keymap_status(void) {
     keymap_config.swap_lalt_lgui? "win" : "mac", get_leyer_status());
 }
 
-static inline void render_keymap_status(struct CharacterMatrix *matrix) {
-
-  matrix_write(matrix, layer_status_buf);
+static inline void render_keymap_status(void) {
+  oled_write_ln(layer_status_buf, false);
 }
 
 #define UPDATE_KEYMAP_STATUS() update_keymap_status()
-#define RENDER_KEYMAP_STATUS(a) render_keymap_status(a)
+#define RENDER_KEYMAP_STATUS() render_keymap_status()
 
 #else
 
 #define UPDATE_KEYMAP_STATUS()
-#define RENDER_KEYMAP_STATUS(a)
+#define RENDER_KEYMAP_STATUS()
 
 #endif
 
@@ -238,54 +231,29 @@ void matrix_init_user(void) {
     RGB_current_mode = rgblight_config.mode;
     UPDATE_KEYMAP_STATUS();
   #endif
-  //SSD1306 OLED init, make sure to add #define SSD1306OLED in config.h
-  #ifdef SSD1306OLED
-    iota_gfx_init(!has_usb()); // turns on the display
-  #endif
 }
 
-//SSD1306 OLED update loop, make sure to add #define SSD1306OLED in config.h
-#ifdef SSD1306OLED
+//SSD1306 OLED update loop, make sure to enable OLED_DRIVER_ENABLE=yes in rules.mk
+#ifdef OLED_DRIVER_ENABLE
 
-void matrix_scan_user(void) {
-  iota_gfx_task();  // this is what updates the display continuously
-}
-
-static inline void matrix_update(struct CharacterMatrix *dest,
-                          const struct CharacterMatrix *source) {
-  if (memcmp(dest->display, source->display, sizeof(dest->display))) {
-    memcpy(dest->display, source->display, sizeof(dest->display));
-    dest->dirty = true;
+oled_rotation_t oled_init_user(oled_rotation_t rotation) {
+  if (!is_keyboard_master()) {
+    return OLED_ROTATION_180;  // flips the display 180 degrees if offhand
   }
+  return rotation;
 }
 
-static inline void render_status(struct CharacterMatrix *matrix) {
-
-  UPDATE_LED_STATUS();
-  RENDER_LED_STATUS(matrix);
-  RENDER_KEYMAP_STATUS(matrix);
-  UPDATE_LOCK_STATUS();
-  RENDER_LOCK_STATUS(matrix);
-  RENDER_KEY_STATUS(matrix);
-}
-
-void iota_gfx_task_user(void) {
-  struct CharacterMatrix matrix;
-
-  #if DEBUG_TO_SCREEN
-    if (debug_enable) {
-      return;
-    }
-  #endif
-
-  matrix_clear(&matrix);
-  if (is_master) {
-    render_status(&matrix);
+void oled_task_user(void) {
+  if (is_keyboard_master()) {
+    UPDATE_LED_STATUS();
+    RENDER_LED_STATUS();
+    RENDER_KEYMAP_STATUS();
+    UPDATE_LOCK_STATUS();
+    RENDER_LOCK_STATUS();
+    RENDER_KEY_STATUS();
   } else {
-    RENDER_LOGO(&matrix);
+    RENDER_LOGO();
   }
-
-  matrix_update(&display, &matrix);
 }
 
 #endif

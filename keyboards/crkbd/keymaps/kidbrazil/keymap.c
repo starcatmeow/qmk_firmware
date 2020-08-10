@@ -128,7 +128,7 @@ void matrix_scan_user(void) {
 #ifdef OLED_DRIVER_ENABLE
 // Init Oled and Rotate....
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
-    if (!has_usb())
+    if (!is_keyboard_master())
       return OLED_ROTATION_180;  // flips the display 180 to see it from my side
     return rotation;
 }

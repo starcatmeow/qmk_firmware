@@ -3,11 +3,6 @@
 #define EE_HANDS
 #define SPLIT_USB_DETECT
 
-#undef USE_I2C
-#undef SSD1306OLED
-
-#define USE_SERIAL_PD2
-
 #define IGNORE_MOD_TAP_INTERRUPT
 #define PERMISSIVE_HOLD
 #define TAPPING_TERM 250
@@ -20,6 +15,7 @@
 #    define AUDIO_CLICKY
 #endif
 
+#undef OLED_FONT_H
 #define OLED_FONT_H "keyboards/crkbd/keymaps/gotham/glcdfont.c"
 
 #define RGBLIGHT_SLEEP
@@ -27,7 +23,6 @@
 #ifdef RGBLIGHT_ENABLE
 #    undef RGBLED_NUM
 #    define RGBLED_NUM 6
-#    define RGBLIGHT_LIMIT_VAL 150
 #    define RGBLIGHT_HUE_STEP 16
 #    define RGBLIGHT_SAT_STEP 32
 #    define RGBLIGHT_VAL_STEP 32
@@ -40,7 +35,6 @@
 #ifdef RGB_MATRIX_ENABLE
 #    define RGB_MATRIX_KEYPRESSES                // reacts to keypresses
 #    define RGB_DISABLE_WHEN_USB_SUSPENDED true  // turn off effects when suspended
-#    define RGB_MATRIX_MAXIMUM_BRIGHTNESS 150    // limits maximum brightness of LEDs to 150 out of 255. Higher may cause the controller to crash.
 #    define RGB_MATRIX_HUE_STEP 32
 #    define RGB_MATRIX_SAT_STEP 64
 #    define RGB_MATRIX_VAL_STEP 64
